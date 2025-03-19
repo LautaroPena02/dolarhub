@@ -1,0 +1,38 @@
+<div class="container-fluid">
+  <div class="card home">
+    <h1 class="text-center my-3">Convierte y Consulta el Tipo de Cambio del Dólar</h1>
+    <div class="row g-3 d-flex justify-content-center">
+      <div class="col-6 col-md-6 col-lg-5">
+        <div class="tipos-dolar">
+          <div class="list-group shadow-sm">
+            <a 
+              *ngFor="let tipo of ['oficial', 'blue', 'bolsa', 'ccl', 'tarjeta', 'mayorista', 'cripto']"
+              class="list-group-item list-group-item-action py-2"
+              [ngClass]="{'active': tipoDolarSeleccionado === tipo}"
+              (click)="seleccionarTipoDolar(tipo)">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="tipo-dolar">Dólar {{ tipo | titlecase }}</span>
+                <div *ngIf="getDolarSeleccionado(tipo) as dolar" class="cotizaciones">
+                  <span class="cotizacion-item">Compra: {{ dolar.compra | currency }}</span>
+                  <span class="cotizacion-item ms-2">Venta: {{ dolar.venta | currency }}</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-6 col-lg-5">
+        <app-calculator 
+          [tipoDolarSeleccionado]="tipoDolarSeleccionado"
+          [dolarOficial]="dolarOficial"
+          [dolarBlue]="dolarBlue"
+          [dolarBolsa]="dolarBolsa"
+          [dolarCCL]="dolarCCL"
+          [dolarTarjeta]="dolarTarjeta"
+          [dolarMayorista]="dolarMayorista"
+          [dolarCripto]="dolarCripto">
+        </app-calculator>
+      </div>
+    </div>
+  </div>
+</div>

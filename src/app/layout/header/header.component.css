@@ -1,0 +1,34 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #000000;
+    color: white;
+    padding: 10px 20px;
+  }
+  
+  h1 {
+    margin: 0;
+    font-size: 2rem; 
+    font-weight: bold;
+  }
+  h1:hover {
+    color: #3cbb16;
+  }
+
+  .icons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .icons a {
+    color: white;
+    font-size: 2rem;
+    transition: transform 0.2s ease, color 0.3s;
+  }
+  
+  .icons a:hover {
+    transform: scale(1.2); 
+    color: #3cbb16; 
+  }
+  

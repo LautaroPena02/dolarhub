@@ -4,7 +4,7 @@ Dólar Hub es una calculadora en línea que permite conocer los diferentes tipos
 - Conversión rápida y sencilla de dólares a pesos argentinos
 - Interfaz intuitiva y fácil de usar
 
-Tecnologias utilizadas:
+Tecnologías utilizadas:
 - Angular CLI versión 19.2.3​
 - API DolarAPI para la obtención de datos de cotizaciones​
 - TypeScript para el desarrollo de la lógica de la aplicación  

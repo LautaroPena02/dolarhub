@@ -1,8 +1,85 @@
-html, body {
-  height: 100%;
-  background: #000000;
-  font-family: "Balsamiq Sans", sans-serif;
+/* Estilos globales */
+:root {
+  --primary-color: rgb(30, 173, 17);
+  --background-color: #000000;
+  --text-color: #ffffff;
+  --secondary-bg: #252525;
+  --border-color: #444;
+  --input-bg: #333;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+* {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--background-color);
+  font-family: "Balsamiq Sans", sans-serif;
+  color: var(--text-color);
+  line-height: 1.5;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  padding: clamp(10px, 2vw, 20px);
+}
+
+/* Mejoras de accesibilidad */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0f5132;
+}
+
+/* Prevenir selección de texto en elementos interactivos */
+button, 
+input, 
+select, 
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mejoras para dispositivos táctiles */
+@media (hover: none) {
+  .btn:active,
+  .list-group-item:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Optimizaciones de rendimiento */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

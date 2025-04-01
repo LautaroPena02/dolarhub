@@ -1,11 +1,11 @@
 .converter {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  width: 90%;
+  gap: clamp(12px, 2vw, 16px);
+  width: 100%;
   max-width: 500px;
   margin: 0 auto;
-  padding: 20px;
+  padding: clamp(15px, 3vw, 20px);
   background-color: #000000;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -13,17 +13,22 @@
 }
 
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 600;
   text-align: center;
-  padding: 1rem;
-  font-size: 1.1rem;
+  padding: clamp(0.8rem, 2vw, 1rem);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   line-height: 1.4;
   border-radius: 10px;
   transition: all 0.3s ease-in-out;
   cursor: pointer;
   color: white;
   border: none;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
 }
 
 .btn-primary {
@@ -40,31 +45,34 @@
 
 .btn:focus {
   outline: none;
+  box-shadow: 0 0 0 2px rgba(30, 173, 17, 0.3);
 }
 
 .d-flex.mb-3 {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  gap: clamp(12px, 2vw, 16px);
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .calculadora-container {
   background-color: #252525;
   border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
+  padding: clamp(15px, 3vw, 20px);
+  margin-bottom: clamp(12px, 2vw, 16px);
   width: 100%;
   box-sizing: border-box;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .calculadora-header {
-  font-size: 28px;
+  font-size: clamp(20px, 4vw, 28px);
   font-weight: 600;
   color: white;
-  margin-bottom: 14px;
+  margin-bottom: clamp(10px, 2vw, 14px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,41 +82,44 @@
 
 .calculadora-header i {
   margin-right: 10px;
-  font-size: 16px;
+  font-size: clamp(14px, 2vw, 16px);
 }
 
 .form-label {
   color: #bbb;
   margin-bottom: 8px;
-  font-size: 18px;
+  font-size: clamp(14px, 2.5vw, 18px);
   font-weight: 500;
   display: block;
 }
 
 .input-group {
-  margin-bottom: 16px;
+  margin-bottom: clamp(12px, 2vw, 16px);
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .input-group-text {
   background-color: #444;
   color: #bbb;
   border: 1px solid #555;
-  font-size: 14px;
+  font-size: clamp(12px, 2vw, 14px);
   font-weight: 500;
-  padding: 8px 12px;
+  padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
   border-radius: 8px;
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: center;
 }
 
 .form-control {
   background-color: #333;
   border: 1px solid #444;
   color: white;
-  font-size: 14px;
-  padding: 12px 16px;
+  font-size: clamp(12px, 2vw, 14px);
+  padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px);
   height: auto;
   width: 100%;
   border-radius: 8px;
@@ -121,16 +132,16 @@
 .current-rate {
   background-color: #1b611a;
   border-radius: 10px;
-  padding: 10px;
+  padding: clamp(8px, 2vw, 10px);
   color: white;
-  font-size: 18px;
+  font-size: clamp(14px, 2.5vw, 18px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .current-rate p {
   margin-bottom: 8px;
   text-align: center;
-  font-size: 24px;
+  font-size: clamp(18px, 3vw, 24px);
   font-weight: 600;
 }
 
@@ -139,45 +150,131 @@
   display: flex;
   align-items: center;
   width: 100%;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .current-rate span {
-  font-size: 16px;
+  font-size: clamp(14px, 2vw, 16px);
 }
 
-
-.d-flex.mb-3 {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
+/* Tablet (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
-  .d-flex.mb-3 {
-    flex-direction: row;
-    flex-wrap: nowrap; 
+  .converter {
+    padding: 20px;
+    max-width: 600px;
   }
   
-  .d-flex.mb-3 .btn {
-    flex: 1; 
-    min-width: 0;
-    font-size: 0.9rem; 
-    padding: 0.8rem;
+  .d-flex.mb-3 {
+    flex-direction: row;
+    gap: 15px;
+  }
+  
+  .btn {
+    max-width: 250px;
+    padding: 0.9rem;
+    font-size: 1rem;
+  }
+  
+  .calculadora-container {
+    padding: 20px;
+  }
+  
+  .calculadora-header {
+    font-size: 24px;
+  }
+  
+  .form-label {
+    font-size: 16px;
+  }
+  
+  .input-group-text {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  
+  .form-control {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+  
+  .current-rate {
+    padding: 12px;
+  }
+  
+  .current-rate p {
+    font-size: 20px;
+  }
+  
+  .current-rate span {
+    font-size: 16px;
   }
 }
 
-@media (max-width: 480px) {
+/* Móvil pequeño (menos de 768px) */
+@media (max-width: 767px) {
+  .converter {
+    padding: 15px;
+  }
+  
   .d-flex.mb-3 {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
-
+  
   .btn {
+    max-width: 100%;
+    padding: 0.8rem;
+  }
+  
+  .input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .input-group-text {
     width: 100%;
-    margin-bottom: 8px;
-    padding: 1rem;
-    font-size: 1.1rem;
+    text-align: center;
+  }
+  
+  .calculadora-container {
+    padding: 15px;
+  }
+}
+
+/* Móvil muy pequeño (menos de 480px) */
+@media (max-width: 479px) {
+  .converter {
+    padding: 12px;
+  }
+  
+  .calculadora-header {
+    font-size: 20px;
+  }
+  
+  .form-label {
+    font-size: 14px;
+  }
+  
+  .input-group-text {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+  
+  .form-control {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  
+  .current-rate {
+    padding: 8px;
+  }
+  
+  .current-rate p {
+    font-size: 18px;
+  }
+  
+  .current-rate span {
+    font-size: 14px;
   }
 }

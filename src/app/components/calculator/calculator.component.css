@@ -105,7 +105,7 @@
 }
 
 .input-group-text {
-  background-color: #1a1a1a;
+  background-color: #4e4c4c;
   color: white;
   border: 1px solid #222;
   font-size: clamp(12px, 2vw, 14px);

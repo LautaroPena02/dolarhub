@@ -1,4 +1,4 @@
-Dólar Hub es una calculadora en línea que permite conocer los diferentes tipos de dólares que cotizan en Argentina y realizar la conversión a pesos de manera rápida y sencilla. Utiliza la API DolarAPI para ofrecer información actualizada sobre los tipos de cambio más relevantes.
+Dólar Hub es una plataforma en línea que proporciona acceso a información actualizada sobre los distintos tipos de cambio que cotizan en Argentina. Integrado con la API DolarAPI, ofrece un seguimiento preciso de las cotizaciones más relevantes, facilitando la conversión a pesos de manera rápida, eficiente y confiable.
 
 - Visualización de las cotizaciones actuales de diferentes tipos de dólares en Argentina
 - Conversión rápida y sencilla de dólares a pesos argentinos

@@ -1,19 +1,19 @@
 .converter {
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 2vw, 16px);
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  padding: clamp(15px, 3vw, 20px);
-  background-color: #000000;
+  gap: clamp(4px, 0.6vw, 5px);
+  background-color: #111111;
+  border: 1px solid #222;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  font-family: 'Roboto', sans-serif;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: clamp(8px, 1.5vw, 12px);
 }
 
 .btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
@@ -21,51 +21,54 @@
   padding: clamp(0.8rem, 2vw, 1rem);
   font-size: clamp(0.9rem, 2vw, 1.1rem);
   line-height: 1.4;
-  border-radius: 10px;
-  transition: all 0.3s ease-in-out;
+  border-radius: 8px;
+  transition: all 0.2s ease;
   cursor: pointer;
   color: white;
-  border: none;
+  border: 1px solid #222;
   gap: 8px;
   width: 100%;
   max-width: 300px;
+  background-color: #1a1a1a;
+  height: 100%;
+  min-height: 48px;
 }
 
-.btn-primary {
-  background-color: #252525;
+.btn:hover {
+  background-color: #222;
+  border-color: rgb(30, 173, 17);
 }
 
-.btn-primary:hover {
-  background-color: #08550c;
-}
-
-.btn-primary.active {
-  background-color: #127517;
+.btn.active {
+  background-color: #222;
+  border-color: rgb(30, 173, 17);
 }
 
 .btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(30, 173, 17, 0.3);
+  border-color: rgb(30, 173, 17);
 }
 
 .d-flex.mb-3 {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   margin-bottom: clamp(1rem, 2vw, 1.5rem);
-  gap: clamp(12px, 2vw, 16px);
+  gap: clamp(12px, 2vw, 8px);
   flex-wrap: wrap;
   width: 100%;
 }
 
 .calculadora-container {
-  background-color: #252525;
+  background-color: #111111;
+  border: 1px solid #222;
   border-radius: 12px;
-  padding: clamp(15px, 3vw, 20px);
-  margin-bottom: clamp(12px, 2vw, 16px);
+  padding: clamp(8px, 1.5vw, 12px);
+  margin-bottom: clamp(4px, 0.6vw, 5px);
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
 }
 
 .calculadora-header {
@@ -86,7 +89,7 @@
 }
 
 .form-label {
-  color: #bbb;
+  color: white;
   margin-bottom: 8px;
   font-size: clamp(14px, 2.5vw, 18px);
   font-weight: 500;
@@ -94,35 +97,37 @@
 }
 
 .input-group {
-  margin-bottom: clamp(12px, 2vw, 16px);
+  margin-bottom: clamp(4px, 0.6vw, 5px);
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
 }
 
 .input-group-text {
-  background-color: #444;
-  color: #bbb;
-  border: 1px solid #555;
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #222;
   font-size: clamp(12px, 2vw, 14px);
   font-weight: 500;
-  padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
+  padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
   border-radius: 8px;
   white-space: nowrap;
   min-width: 60px;
   text-align: center;
+  transition: all 0.2s ease;
 }
 
 .form-control {
-  background-color: #333;
-  border: 1px solid #444;
+  background-color: #1a1a1a;
+  border: 1px solid #222;
   color: white;
   font-size: clamp(12px, 2vw, 14px);
   padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px);
   height: auto;
   width: 100%;
   border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .cotizacion-info {
@@ -130,12 +135,14 @@
 }
 
 .current-rate {
-  background-color: #1b611a;
-  border-radius: 10px;
+  background-color: #1a1a1a;
+  border: 1px solid #222;
+  border-radius: 8px;
   padding: clamp(8px, 2vw, 10px);
   color: white;
   font-size: clamp(14px, 2.5vw, 18px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
 }
 
 .current-rate p {
@@ -158,7 +165,6 @@
   font-size: clamp(14px, 2vw, 16px);
 }
 
-/* Tablet (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
   .converter {
     padding: 20px;
@@ -211,7 +217,6 @@
   }
 }
 
-/* Móvil pequeño (menos de 768px) */
 @media (max-width: 767px) {
   .converter {
     padding: 15px;
@@ -242,7 +247,6 @@
   }
 }
 
-/* Móvil muy pequeño (menos de 480px) */
 @media (max-width: 479px) {
   .converter {
     padding: 12px;

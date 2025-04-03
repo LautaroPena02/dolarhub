@@ -1,195 +1,145 @@
 .card.home {
-  background-color: transparent;
-  padding: clamp(15px, 3vw, 50px);
+  padding: clamp(15px, 3vw, 30px);
+  margin: clamp(10px, 2vw, 20px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-h1 {
-  color: white;
-  font-size: clamp(18px, 4vw, 24px);
-  font-weight: bold;
-  margin-bottom: clamp(15px, 3vw, 25px);
-  text-align: center;
-  letter-spacing: 1px;
-  padding: 0 15px;
+  width: calc(100% - clamp(20px, 4vw, 40px));
+  max-width: 1200px;
+  background-color: #111111;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: clamp(15px, 3vw, 30px);
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 15px;
+  margin: clamp(10px, 2vw, 20px) auto;
+  align-items: start;
 }
 
-.col-6, .col-md-6 {
-  position: relative;
-  width: auto;
-  max-width: 500px; 
-  padding: 0 15px;
-  flex: 0 0 auto;
-}
-
-.list-group-item {
+.list-group {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.5vw, 12px);
+  width: 100%;
   background-color: #111111;
-  border-radius: 8px;
-  padding: clamp(8px, 1.5vw, 12px);
+  padding: clamp(12px, 2vw, 20px);
+  margin: clamp(8px, 1.5vw, 15px) 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-height: 500px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(30, 173, 17) #1a1a1a;
+}
+
+.list-group::-webkit-scrollbar {
+  width: 8px;
+}
+
+.list-group::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.list-group::-webkit-scrollbar-thumb {
+  background-color: rgb(30, 173, 17);
+  border-radius: 4px;
+}
+.list-group-item {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: clamp(10px, 2vw, 16px);
   color: white;
   border: 1px solid #222;
-  transition: all 0.3s ease;
-  margin-bottom: 6px;
+  transition: all 0.2s ease;
   cursor: pointer;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-}
-
-.list-group-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 2px;
-  background-color: transparent;
-  transition: all 0.3s ease;
-}
-
-.list-group-item:hover {
-  color: rgb(30, 173, 17);
-  background-color: #222222;
-  transform: translateX(3px);
-}
-
-.list-group-item:hover::before {
-  background-color: rgb(30, 173, 17);
-}
-
-.list-group-item.active {
-  background-color: #222222;
-  color: rgb(30, 173, 17);
-  border-color: #333;
-  transform: translateX(3px);
-}
-
-.list-group-item.active::before {
-  background-color: rgb(30, 173, 17);
 }
 
 .tipo-dolar {
   font-weight: 500;
-  font-size: clamp(14px, 2.5vw, 18px);
+  font-size: clamp(13px, 2vw, 16px);
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: clamp(6px, 1vw, 8px);
+}
+
+.cotizacion-item {
+  font-size: clamp(12px, 1.5vw, 14px);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1vw, 6px);
+}
+
+.list-group-item:hover {
+  background-color: #222;
+  border-color: rgb(30, 173, 17);
+}
+
+.list-group-item.active {
+  background-color: #222;
+  border-color: rgb(30, 173, 17);
+}
+
+.tipo-dolar {
+  font-weight: 500;
+  font-size: 16px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .tipo-dolar::before {
   content: '$';
   color: rgb(30, 173, 17);
-  font-size: 0.9em;
 }
 
 .cotizaciones {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: clamp(8px, 1.5vw, 12px);
   align-items: center;
   justify-content: flex-end;
   background-color: rgba(30, 173, 17, 0.1);
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: clamp(10px, 1.5vw, 12px);
+  border-radius: 8px;
   border: 1px solid rgba(30, 173, 17, 0.2);
-}
-
-.cotizacion-item {
-  font-size: clamp(12px, 2vw, 16px);
-  color: #d6dbd7;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 .cotizacion-item::before {
   content: '•';
   color: rgb(30, 173, 17);
-  font-size: 1.2em;
 }
 
-.list-group {
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Tablet (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) {
   .row {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
   
-  .card.home {
-    padding: 20px;
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
   }
   
-  h1 {
-    font-size: 22px;
-    padding: 0 20px;
+  .list-group {
+    max-height: 450px;
+    padding: 12px;
   }
   
   .list-group-item {
-    padding: 10px;
-  }
-  
-  .tipo-dolar {
-    font-size: 16px;
-  }
-  
-  .cotizacion-item {
-    font-size: 14px;
-  }
-  
-  .cotizaciones {
-    padding: 8px 12px;
-  }
-}
-
-/* Móvil pequeño (menos de 768px) */
-@media (max-width: 767px) {
-  .row {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  
-  .card.home {
-    padding: 15px;
-  }
-  
-  h1 {
-    font-size: 20px;
-    padding: 0 15px;
-  }
-  
-  .list-group-item {
-    padding: 8px;
+    padding: 14px;
   }
   
   .tipo-dolar {
@@ -199,30 +149,26 @@ h1 {
   .cotizacion-item {
     font-size: 13px;
   }
-  
-  .cotizaciones {
-    padding: 6px 10px;
-  }
 }
 
-/* Móvil muy pequeño (menos de 480px) */
-@media (max-width: 479px) {
-  .card.home {
-    padding: 10px;
+@media (max-width: 767px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
   
   h1 {
-    font-size: 18px;
-    padding: 0 10px;
+    font-size: 22px;
+    margin-bottom: 16px;
   }
   
-  .row {
-    padding: 0 10px;
-    gap: 12px;
+  .list-group {
+    max-height: 400px;
+    padding: 10px;
   }
   
   .list-group-item {
-    padding: 6px;
+    padding: 12px;
   }
   
   .tipo-dolar {
@@ -233,11 +179,36 @@ h1 {
     font-size: 12px;
   }
   
+  .cotizaciones {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 479px) {
+  h1 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  
   .list-group {
-    padding: 6px;
+    max-height: 350px;
+    padding: 8px;
+  }
+  
+  .list-group-item {
+    padding: 10px;
+  }
+  
+  .tipo-dolar {
+    font-size: 13px;
+  }
+  
+  .cotizacion-item {
+    font-size: 12px;
   }
   
   .cotizaciones {
-    padding: 6px 8px;
+    padding: 8px;
   }
 }
+

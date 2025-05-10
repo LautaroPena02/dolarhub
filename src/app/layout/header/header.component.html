@@ -1,6 +1,9 @@
 <header class="header">
-    <h1>Dólar Hub</h1>
+    <h1><a href="/" style="color:inherit; text-decoration:none;">Dólar Hub</a></h1>
     <div class="icons">
+      <button class="theme-toggle" (click)="themeService.toggleTheme()">
+        <fa-icon [icon]="isDarkMode ? faSun : faMoon"></fa-icon>
+      </button>
       <a [href]="githubUrl" target="_blank">
         <fa-icon [icon]="faGithub" class="icon"></fa-icon>
       </a>

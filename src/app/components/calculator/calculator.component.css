@@ -2,10 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: clamp(4px, 0.6vw, 5px);
-  background-color: #111111;
-  border: 1px solid #222;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background-color: var(--secondary-bg);
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
@@ -24,29 +21,29 @@
   border-radius: 8px;
   transition: all 0.2s ease;
   cursor: pointer;
-  color: white;
-  border: 1px solid #222;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   gap: 8px;
   width: 100%;
   max-width: 300px;
-  background-color: #1a1a1a;
+  background-color: var(--input-bg);
   height: 100%;
   min-height: 48px;
 }
 
 .btn:hover {
-  background-color: #222;
-  border-color: rgb(30, 173, 17);
+  background-color: var(--secondary-bg);
+  border-color: var(--primary-color);
 }
 
 .btn.active {
-  background-color: #222;
-  border-color: rgb(30, 173, 17);
+  background-color: var(--secondary-bg);
+  border-color: var(--primary-color);
 }
 
 .btn:focus {
   outline: none;
-  border-color: rgb(30, 173, 17);
+  border-color: var(--primary-color);
 }
 
 .d-flex.mb-3 {
@@ -60,27 +57,26 @@
 }
 
 .calculadora-container {
-  background-color: #111111;
-  border: 1px solid #222;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: clamp(8px, 1.5vw, 12px);
   margin-bottom: clamp(4px, 0.6vw, 5px);
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 
 .calculadora-header {
   font-size: clamp(20px, 4vw, 28px);
   font-weight: 600;
-  color: white;
+  color: var(--text-color);
   margin-bottom: clamp(10px, 2vw, 14px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding-bottom: 8px;
-  border-bottom: 2px solid #444;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .calculadora-header i {
@@ -89,7 +85,7 @@
 }
 
 .form-label {
-  color: white;
+  color: var(--text-color);
   margin-bottom: 8px;
   font-size: clamp(14px, 2.5vw, 18px);
   font-weight: 500;
@@ -105,9 +101,9 @@
 }
 
 .input-group-text {
-  background-color: #4e4c4c;
-  color: white;
-  border: 1px solid #222;
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   font-size: clamp(12px, 2vw, 14px);
   font-weight: 500;
   padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
@@ -119,9 +115,9 @@
 }
 
 .form-control {
-  background-color: #1a1a1a;
-  border: 1px solid #222;
-  color: white;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
   font-size: clamp(12px, 2vw, 14px);
   padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 16px);
   height: auto;
@@ -135,13 +131,12 @@
 }
 
 .current-rate {
-  background-color: #1a1a1a;
-  border: 1px solid #222;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: clamp(8px, 2vw, 10px);
-  color: white;
+  color: var(--text-color);
   font-size: clamp(14px, 2.5vw, 18px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 
@@ -163,6 +158,143 @@
 
 .current-rate span {
   font-size: clamp(14px, 2vw, 16px);
+}
+
+.calculator {
+  background-color: var(--secondary-bg);
+  border-radius: 12px;
+  padding: clamp(15px, 3vw, 30px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  width: 100%;
+}
+
+.calculator h2 {
+  color: var(--text-color);
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  margin-bottom: clamp(15px, 3vw, 25px);
+  text-align: center;
+}
+
+.calculator-form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 20px);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: var(--text-color);
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+}
+
+.form-group input {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  padding: 12px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.calculator-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: clamp(15px, 3vw, 25px) 0;
+}
+
+.toggle-btn {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.toggle-btn:hover:not(.active) {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.result {
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  margin-top: clamp(15px, 3vw, 25px);
+  padding: 15px;
+  text-align: center;
+}
+
+[data-theme="light"] .converter {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--primary-color);
+}
+
+[data-theme="light"] .btn {
+  background-color: white;
+}
+
+[data-theme="light"] .calculadora-container {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .input-group-text {
+  background-color: var(--secondary-bg);
+}
+
+[data-theme="light"] .form-control {
+  background-color: white;
+}
+
+[data-theme="light"] .current-rate {
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.converter input,
+.converter .form-control {
+  border: 2px solid var(--primary-color) !important;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  padding: 12px;
+  transition: border-color 0.3s ease;
+}
+
+.converter input:focus,
+.converter .form-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+[data-theme="light"] .converter input,
+[data-theme="light"] .converter .form-control {
+  background-color: white;
+  color: var(--text-color);
+  border: 2px solid var(--primary-color) !important;
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {

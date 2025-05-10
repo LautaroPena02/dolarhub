@@ -7,9 +7,11 @@
   align-items: center;
   width: calc(100% - clamp(20px, 4vw, 40px));
   max-width: 1200px;
-  background-color: #111111;
+  background-color: var(--secondary-bg);
+
+  border: 2px solid var(--primary-color);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }
 
 .row {
@@ -27,14 +29,13 @@
   flex-direction: column;
   gap: clamp(8px, 1.5vw, 12px);
   width: 100%;
-  background-color: #111111;
+  background-color: var(--secondary-bg);
   padding: clamp(12px, 2vw, 20px);
   margin: clamp(8px, 1.5vw, 15px) 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   max-height: 500px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgb(30, 173, 17) #1a1a1a;
+  scrollbar-color: var(--primary-color) var(--secondary-bg);
 }
 
 .list-group::-webkit-scrollbar {
@@ -42,20 +43,21 @@
 }
 
 .list-group::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: var(--secondary-bg);
   border-radius: 4px;
 }
 
 .list-group::-webkit-scrollbar-thumb {
-  background-color: rgb(30, 173, 17);
+  background-color: var(--primary-color);
   border-radius: 4px;
 }
+
 .list-group-item {
-  background-color: #1a1a1a;
+  background-color: var(--input-bg);
   border-radius: 12px;
   padding: clamp(10px, 2vw, 16px);
-  color: white;
-  border: 1px solid #222;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
   transition: all 0.2s ease;
   cursor: pointer;
   width: 100%;
@@ -75,34 +77,25 @@
 
 .cotizacion-item {
   font-size: clamp(12px, 1.5vw, 14px);
-  color: #fff;
+  color: var(--text-color);
   display: flex;
   align-items: center;
   gap: clamp(4px, 1vw, 6px);
 }
 
 .list-group-item:hover {
-  background-color: #222;
-  border-color: rgb(30, 173, 17);
+  background-color: var(--secondary-bg);
+  border-color: var(--primary-color);
 }
 
 .list-group-item.active {
-  background-color: #222;
-  border-color: rgb(30, 173, 17);
-}
-
-.tipo-dolar {
-  font-weight: 500;
-  font-size: 16px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  background-color: var(--secondary-bg);
+  border-color: var(--primary-color);
 }
 
 .tipo-dolar::before {
   content: '$';
-  color: rgb(30, 173, 17);
+  color: var(--primary-color);
 }
 
 .cotizaciones {
@@ -119,7 +112,24 @@
 
 .cotizacion-item::before {
   content: '•';
-  color: rgb(30, 173, 17);
+  color: var(--primary-color);
+}
+
+[data-theme="light"] .card.home {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .list-group {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .list-group-item {
+  background-color: white;
+}
+
+[data-theme="light"] .list-group-item:hover,
+[data-theme="light"] .list-group-item.active {
+  background-color: var(--secondary-bg);
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {

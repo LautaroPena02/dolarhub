@@ -1,5 +1,5 @@
 import {
-  Component, Input, OnChanges, SimpleChanges,
+  Component, Input, Output, EventEmitter, OnChanges, SimpleChanges,
   ElementRef, ViewChild, AfterViewInit, OnDestroy, NgZone, Inject, PLATFORM_ID
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -32,10 +32,12 @@ const RANGOS: RangoOption[] = [
 export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() entries: HistorialEntry[] = [];
   @Input() tipoNombre = '';
+  @Input() resetKey = 0;
+  @Output() rangoChange = new EventEmitter<RangoTemporal>();
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
 
   rangos = RANGOS;
-  rangoSeleccionado: RangoTemporal = '30d';
+  rangoSeleccionado: RangoTemporal = '24h';
   private chart: Chart | null = null;
   private isBrowser: boolean;
 
@@ -62,8 +64,16 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.isBrowser && changes['entries'] && this.chartCanvas) {
-      this.updateChart();
+    if (this.isBrowser && this.chartCanvas) {
+      if (changes['resetKey'] && !changes['resetKey'].firstChange) {
+        this.rangoSeleccionado = '24h';
+        this.rangoChange.emit('24h');
+      }
+      if (changes['entries']) {
+        this.updateChart();
+      } else if (changes['resetKey'] && !changes['resetKey'].firstChange) {
+        this.updateChart();
+      }
     }
   }
 
@@ -73,6 +83,7 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   seleccionarRango(key: RangoTemporal): void {
     this.rangoSeleccionado = key;
+    this.rangoChange.emit(key);
     if (this.isBrowser) {
       this.updateChart();
     }
@@ -200,7 +211,7 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   private formatearLabel(fecha: string): string {
     const d = new Date(fecha);
     if (this.rangoSeleccionado === '24h') {
-      return `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+      return `${d.getUTCHours()}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
     }
     if (this.rangoSeleccionado === '1a') {
       return `${d.getMonth() + 1}/${d.getFullYear().toString().slice(2)}`;

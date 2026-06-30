@@ -15,6 +15,7 @@ interface CotizacionEntry {
   tipo: string;
   nombre: string;
   data: DolarData | null;
+  variacion: number | null;
 }
 
 const STORAGE_FAVS = 'dolarhub-favoritos';
@@ -31,13 +32,13 @@ const STORAGE_FAVS = 'dolarhub-favoritos';
 })
 export class HomeComponent implements OnInit {
   cotizaciones: CotizacionEntry[] = [
-    { tipo: 'oficial', nombre: 'Dólar Oficial', data: null },
-    { tipo: 'blue', nombre: 'Dólar Blue', data: null },
-    { tipo: 'bolsa', nombre: 'Dólar Bolsa', data: null },
-    { tipo: 'ccl', nombre: 'Dólar CCL', data: null },
-    { tipo: 'tarjeta', nombre: 'Dólar Tarjeta', data: null },
-    { tipo: 'mayorista', nombre: 'Dólar Mayorista', data: null },
-    { tipo: 'cripto', nombre: 'Dólar Cripto', data: null },
+    { tipo: 'oficial', nombre: 'Dólar Oficial', data: null, variacion: null },
+    { tipo: 'blue', nombre: 'Dólar Blue', data: null, variacion: null },
+    { tipo: 'bolsa', nombre: 'Dólar Bolsa', data: null, variacion: null },
+    { tipo: 'ccl', nombre: 'Dólar CCL', data: null, variacion: null },
+    { tipo: 'tarjeta', nombre: 'Dólar Tarjeta', data: null, variacion: null },
+    { tipo: 'mayorista', nombre: 'Dólar Mayorista', data: null, variacion: null },
+    { tipo: 'cripto', nombre: 'Dólar Cripto', data: null, variacion: null },
   ];
 
   tipoDolarSeleccionado = 'oficial';
@@ -48,7 +49,8 @@ export class HomeComponent implements OnInit {
   favoritos: string[] = [];
 
   historialEntries: HistorialEntry[] = [];
-  historialMap: Record<string, HistorialEntry[]> = {};
+  refreshKey = 0;
+  rangoVariacionHoras = 24;
 
   faRefresh = faRefresh;
   faExclamationTriangle = faExclamationTriangle;
@@ -62,7 +64,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarFavoritos();
-    this.historialMap = this.historialService.cargar();
+    this.calcularVariaciones();
     this.actualizarHistorialSeleccionado();
     this.loadDolarData();
   }
@@ -86,7 +88,7 @@ export class HomeComponent implements OnInit {
   }
 
   private actualizarHistorialSeleccionado(): void {
-    this.historialEntries = this.historialMap[this.tipoDolarSeleccionado] || [];
+    this.historialEntries = this.historialService.obtenerConIntraday(this.tipoDolarSeleccionado);
   }
 
   seleccionarTipoDolar(tipo: string): void {
@@ -107,9 +109,17 @@ export class HomeComponent implements OnInit {
   }
 
   refresh(): void {
+    this.refreshKey++;
+    this.rangoVariacionHoras = 24;
     this.hasError = false;
     this.errorMessage = '';
     this.loadDolarData();
+  }
+
+  onRangoChange(key: string): void {
+    const horas: Record<string, number> = { '24h': 24, '7d': 7 * 24, '30d': 30 * 24, '1a': 365 * 24 };
+    this.rangoVariacionHoras = horas[key] || 30 * 24;
+    this.calcularVariaciones();
   }
 
   private cargarFavoritos(): void {
@@ -144,6 +154,9 @@ export class HomeComponent implements OnInit {
 
         this.cotizaciones.forEach((entry, i) => {
           entry.data = results[i];
+          if (entry.data) {
+            this.historialService.guardarSnapshot(entry.tipo, entry.data.compra, entry.data.venta);
+          }
         });
 
         this.actualizarUltimaActualizacion();
@@ -152,7 +165,8 @@ export class HomeComponent implements OnInit {
       })
     ).subscribe({
       next: (argentinaDatosData) => {
-        this.historialMap = this.historialService.procesarArgentinaDatos(argentinaDatosData);
+        this.historialService.procesarArgentinaDatos(argentinaDatosData);
+        this.calcularVariaciones();
         this.actualizarHistorialSeleccionado();
         this.isLoading = false;
         this.hasError = false;
@@ -162,6 +176,25 @@ export class HomeComponent implements OnInit {
         this.hasError = true;
         this.errorMessage = err || 'Error al cargar las cotizaciones. Verificá tu conexión.';
       }
+    });
+  }
+
+  private calcularVariaciones(): void {
+    const desde = Date.now() - this.rangoVariacionHoras * 60 * 60 * 1000;
+    this.cotizaciones.forEach(entry => {
+      const todos = this.historialService.obtenerConIntraday(entry.tipo);
+      if (todos.length < 2) {
+        entry.variacion = null;
+        return;
+      }
+      const enRango = todos.filter(e => new Date(e.fecha).getTime() >= desde);
+      if (enRango.length < 2) {
+        entry.variacion = null;
+        return;
+      }
+      const ultimo = enRango[enRango.length - 1].venta;
+      const anterior = enRango[0].venta;
+      entry.variacion = anterior !== 0 ? ((ultimo - anterior) / anterior) * 100 : null;
     });
   }
 

@@ -5,7 +5,7 @@
 <div class="flex items-center justify-center gap-2 mb-4 text-xs sm:text-sm text-[var(--text-muted)]"
      *ngIf="!isLoading && !hasError && ultimaActualizacion">
   <fa-icon [icon]="faClock" class="text-[10px]"></fa-icon>
-  <span>Última actualización: {{ ultimaActualizacion | date:'HH:mm' }}</span>
+  <span>Última actualización: {{ ultimaActualizacion | date:"d/M '·' HH:mm" }}</span>
   <button (click)="refresh()"
           class="px-2 py-1 text-xs border border-[var(--border)] rounded text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-colors bg-transparent cursor-pointer">
     <fa-icon [icon]="faRefresh" [class.animate-spin]="isLoading"></fa-icon>
@@ -39,7 +39,9 @@
     <app-chart
       *ngIf="!isLoading && tieneHistorial"
       [entries]="historialEntries"
-      [tipoNombre]="nombreSeleccionado">
+      [tipoNombre]="nombreSeleccionado"
+      [resetKey]="refreshKey"
+      (rangoChange)="onRangoChange($event)">
     </app-chart>
   </div>
 
@@ -55,6 +57,7 @@
         [nombre]="item.nombre"
         [compra]="item.data?.compra ?? null"
         [venta]="item.data?.venta ?? null"
+        [variacion]="item.variacion"
         [isSelected]="tipoDolarSeleccionado === item.tipo"
         [isFavorite]="favoritos.includes(item.tipo)"
         [isLoading]="isLoading"

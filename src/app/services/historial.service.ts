@@ -8,6 +8,7 @@ export interface HistorialEntry {
 }
 
 const STORAGE_KEY = 'dolarhub-historial';
+const SNAPSHOT_KEY = 'dolarhub-intraday';
 
 @Injectable({ providedIn: 'root' })
 export class HistorialService {
@@ -89,5 +90,49 @@ export class HistorialService {
   obtener(tipo: string): HistorialEntry[] {
     const historial = this.cargar();
     return historial[tipo] || [];
+  }
+
+  guardarSnapshot(tipo: string, compra: number, venta: number): void {
+    const hora = Date.now();
+    const snapshots = this.cargarSnapshots();
+    if (!snapshots[tipo]) snapshots[tipo] = [];
+
+    const ultimo = snapshots[tipo][snapshots[tipo].length - 1];
+    if (ultimo) {
+      const diffMs = hora - new Date(ultimo.fecha).getTime();
+      if (diffMs < 5 * 60 * 1000 && ultimo.compra === compra && ultimo.venta === venta) {
+        return;
+      }
+    }
+
+    snapshots[tipo].push({ fecha: new Date(hora).toISOString(), compra, venta });
+
+    const cutoff = hora - 48 * 60 * 60 * 1000;
+    snapshots[tipo] = snapshots[tipo].filter(s => new Date(s.fecha).getTime() >= cutoff);
+
+    try {
+      localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(snapshots));
+    } catch {}
+  }
+
+  private cargarSnapshots(): Record<string, HistorialEntry[]> {
+    try {
+      const raw = localStorage.getItem(SNAPSHOT_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  obtenerConIntraday(tipo: string): HistorialEntry[] {
+    const diarios = this.obtener(tipo);
+    const snapshots = this.cargarSnapshots();
+    const intraday = (snapshots[tipo] || []).filter(s =>
+      new Date(s.fecha).getTime() > Date.now() - 48 * 60 * 60 * 1000
+    );
+
+    const todos = [...diarios, ...intraday];
+    todos.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+    return todos;
   }
 }

@@ -4,11 +4,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 
-export interface VariacionData {
-  tipo: 'subio' | 'bajo' | 'estable';
-  porcentaje: number;
-}
-
 @Component({
   selector: 'app-cotizacion-card',
   standalone: true,
@@ -21,6 +16,7 @@ export class CotizacionCardComponent {
   @Input() nombre = '';
   @Input() compra: number | null = null;
   @Input() venta: number | null = null;
+  @Input() variacion: number | null = null;
   @Input() isSelected = false;
   @Input() isFavorite = false;
   @Input() isLoading = false;

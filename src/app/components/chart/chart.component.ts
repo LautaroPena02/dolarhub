@@ -138,6 +138,12 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
               boxWidth: 12,
               padding: 12,
             },
+            onHover: () => {
+              if (this.chart?.canvas) this.chart.canvas.style.cursor = 'pointer';
+            },
+            onLeave: () => {
+              if (this.chart?.canvas) this.chart.canvas.style.cursor = 'default';
+            },
           },
           tooltip: {
             backgroundColor: '#1a1a1a',

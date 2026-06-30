@@ -38,16 +38,18 @@
       </button>
       <div *ngIf="dropdownOpen"
            class="absolute top-full left-0 right-0 mt-1 bg-[var(--bg-input)] border border-[var(--border)] rounded-lg shadow-[var(--shadow-lg)] z-50 overflow-hidden max-h-[280px] overflow-y-auto">
-        <button *ngFor="let t of tipos"
+        <button *ngFor="let t of tiposOrdenados"
                 type="button"
                 (click)="seleccionarTipo(t.key)"
-                class="w-full text-left px-3 py-2 text-xs font-medium cursor-pointer transition-colors"
+                class="w-full text-left px-3 py-2 text-xs font-medium cursor-pointer transition-colors flex items-center gap-2"
                 [class.text-[var(--primary)]]="t.key === tipoDolarSeleccionado"
                 [class.bg-[var(--primary-light)]]="t.key === tipoDolarSeleccionado"
                 [class.text-[var(--text)]]="t.key !== tipoDolarSeleccionado"
                 [class.hover:bg-[var(--bg-hover)]]="t.key !== tipoDolarSeleccionado"
                 [class.hover:text-[var(--primary)]]="t.key !== tipoDolarSeleccionado">
-          Dólar {{ t.label }}
+          <fa-icon *ngIf="t.key !== 'blue' && favoritos.includes(t.key)" [icon]="faStarSolid"
+                   class="text-[10px] text-[var(--warning)]"></fa-icon>
+          <span>Dólar {{ t.label }}</span>
         </button>
       </div>
     </div>

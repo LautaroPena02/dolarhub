@@ -19,6 +19,7 @@ interface CotizacionEntry {
 }
 
 const STORAGE_FAVS = 'dolarhub-favoritos';
+const STORAGE_OCULTOS = 'dolarhub-ocultos';
 
 @Component({
   selector: 'app-home',
@@ -32,8 +33,8 @@ const STORAGE_FAVS = 'dolarhub-favoritos';
 })
 export class HomeComponent implements OnInit {
   cotizaciones: CotizacionEntry[] = [
-    { tipo: 'oficial', nombre: 'Dólar Oficial', data: null, variacion: null },
     { tipo: 'blue', nombre: 'Dólar Blue', data: null, variacion: null },
+    { tipo: 'oficial', nombre: 'Dólar Oficial', data: null, variacion: null },
     { tipo: 'bolsa', nombre: 'Dólar Bolsa', data: null, variacion: null },
     { tipo: 'ccl', nombre: 'Dólar CCL', data: null, variacion: null },
     { tipo: 'tarjeta', nombre: 'Dólar Tarjeta', data: null, variacion: null },
@@ -41,12 +42,13 @@ export class HomeComponent implements OnInit {
     { tipo: 'cripto', nombre: 'Dólar Cripto', data: null, variacion: null },
   ];
 
-  tipoDolarSeleccionado = 'oficial';
+  tipoDolarSeleccionado = 'blue';
   isLoading = true;
   hasError = false;
   errorMessage = '';
   ultimaActualizacion: string | null = null;
   favoritos: string[] = [];
+  ocultos: string[] = [];
 
   historialEntries: HistorialEntry[] = [];
   refreshKey = 0;
@@ -64,15 +66,21 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarFavoritos();
+    this.cargarOcultos();
     this.calcularVariaciones();
     this.actualizarHistorialSeleccionado();
     this.loadDolarData();
   }
 
   get cotizacionesOrdenadas(): CotizacionEntry[] {
-    const favs = this.cotizaciones.filter(c => this.favoritos.includes(c.tipo));
-    const rest = this.cotizaciones.filter(c => !this.favoritos.includes(c.tipo));
+    const visibles = this.cotizaciones.filter(c => !this.ocultos.includes(c.tipo));
+    const favs = visibles.filter(c => this.favoritos.includes(c.tipo));
+    const rest = visibles.filter(c => !this.favoritos.includes(c.tipo));
     return [...favs, ...rest];
+  }
+
+  get cantOcultos(): number {
+    return this.ocultos.length;
   }
 
   getDolarSeleccionado(tipo: string): DolarData | null {
@@ -84,11 +92,11 @@ export class HomeComponent implements OnInit {
   }
 
   get tieneHistorial(): boolean {
-    return this.historialEntries.length > 0;
+    return this.historialEntries.length > 0 && !this.ocultos.includes(this.tipoDolarSeleccionado);
   }
 
   private actualizarHistorialSeleccionado(): void {
-    this.historialEntries = this.historialService.obtenerConIntraday(this.tipoDolarSeleccionado);
+    this.historialEntries = this.historialService.obtener(this.tipoDolarSeleccionado);
   }
 
   seleccionarTipoDolar(tipo: string): void {
@@ -97,6 +105,7 @@ export class HomeComponent implements OnInit {
   }
 
   toggleFavorito(tipo: string): void {
+    if (tipo === 'blue') return;
     const idx = this.favoritos.indexOf(tipo);
     if (idx >= 0) {
       this.favoritos.splice(idx, 1);
@@ -106,6 +115,26 @@ export class HomeComponent implements OnInit {
       }
     }
     this.guardarFavoritos();
+  }
+
+  toggleOculto(tipo: string): void {
+    if (tipo === 'blue') return;
+    const idx = this.ocultos.indexOf(tipo);
+    if (idx >= 0) {
+      this.ocultos.splice(idx, 1);
+    } else {
+      this.ocultos.push(tipo);
+      if (this.tipoDolarSeleccionado === tipo) {
+        const visible = this.cotizaciones.find(c => !this.ocultos.includes(c.tipo));
+        if (visible) this.seleccionarTipoDolar(visible.tipo);
+      }
+    }
+    this.guardarOcultos();
+  }
+
+  mostrarTodos(): void {
+    this.ocultos = [];
+    this.guardarOcultos();
   }
 
   refresh(): void {
@@ -125,13 +154,26 @@ export class HomeComponent implements OnInit {
   private cargarFavoritos(): void {
     try {
       const stored = localStorage.getItem(STORAGE_FAVS);
-      if (stored) this.favoritos = JSON.parse(stored);
+      if (stored) this.favoritos = JSON.parse(stored).filter((t: string) => t !== 'blue');
     } catch {}
   }
 
   private guardarFavoritos(): void {
     try {
       localStorage.setItem(STORAGE_FAVS, JSON.stringify(this.favoritos));
+    } catch {}
+  }
+
+  private cargarOcultos(): void {
+    try {
+      const stored = localStorage.getItem(STORAGE_OCULTOS);
+      if (stored) this.ocultos = JSON.parse(stored);
+    } catch {}
+  }
+
+  private guardarOcultos(): void {
+    try {
+      localStorage.setItem(STORAGE_OCULTOS, JSON.stringify(this.ocultos));
     } catch {}
   }
 
@@ -180,21 +222,31 @@ export class HomeComponent implements OnInit {
   }
 
   private calcularVariaciones(): void {
-    const desde = Date.now() - this.rangoVariacionHoras * 60 * 60 * 1000;
     this.cotizaciones.forEach(entry => {
       const todos = this.historialService.obtenerConIntraday(entry.tipo);
       if (todos.length < 2) {
         entry.variacion = null;
         return;
       }
-      const enRango = todos.filter(e => new Date(e.fecha).getTime() >= desde);
-      if (enRango.length < 2) {
-        entry.variacion = null;
-        return;
+      if (this.rangoVariacionHoras === 24) {
+        const ultimo = todos[todos.length - 1].venta;
+        const ayer = [...todos].reverse().find(e => {
+          const diffH = (Date.now() - new Date(e.fecha).getTime()) / (1000 * 60 * 60);
+          return diffH >= 12;
+        });
+        entry.variacion = ayer && ayer.venta !== 0
+          ? ((ultimo - ayer.venta) / ayer.venta) * 100 : null;
+      } else {
+        const desde = Date.now() - this.rangoVariacionHoras * 60 * 60 * 1000;
+        const enRango = todos.filter(e => new Date(e.fecha).getTime() >= desde);
+        if (enRango.length < 2) {
+          entry.variacion = null;
+          return;
+        }
+        const ultimo = enRango[enRango.length - 1].venta;
+        const anterior = enRango[0].venta;
+        entry.variacion = anterior !== 0 ? ((ultimo - anterior) / anterior) * 100 : null;
       }
-      const ultimo = enRango[enRango.length - 1].venta;
-      const anterior = enRango[0].venta;
-      entry.variacion = anterior !== 0 ? ((ultimo - anterior) / anterior) * 100 : null;
     });
   }
 

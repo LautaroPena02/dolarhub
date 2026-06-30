@@ -1,5 +1,6 @@
-import { Component, Input, Output, EventEmitter, HostListener, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { FormsModule } from '@angular/forms';
 import { DolarData } from '../../interfaces/dolar-data.interface';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -15,8 +16,8 @@ interface TipoOption {
 }
 
 const TIPOS_DOLAR: TipoOption[] = [
-  { key: 'oficial', label: 'Oficial' },
   { key: 'blue', label: 'Blue' },
+  { key: 'oficial', label: 'Oficial' },
   { key: 'bolsa', label: 'Bolsa' },
   { key: 'ccl', label: 'CCL' },
   { key: 'tarjeta', label: 'Tarjeta' },
@@ -31,8 +32,8 @@ const TIPOS_DOLAR: TipoOption[] = [
   templateUrl: './calculator.component.html',
   styleUrls: ['./calculator.component.css'],
 })
-export class CalculatorComponent {
-  @Input() tipoDolarSeleccionado = 'oficial';
+export class CalculatorComponent implements OnChanges {
+  @Input() tipoDolarSeleccionado = 'blue';
   @Output() tipoDolarSeleccionadoChange = new EventEmitter<string>();
   @Input() dolarOficial: DolarData | null = null;
   @Input() dolarBlue: DolarData | null = null;
@@ -41,8 +42,21 @@ export class CalculatorComponent {
   @Input() dolarTarjeta: DolarData | null = null;
   @Input() dolarMayorista: DolarData | null = null;
   @Input() dolarCripto: DolarData | null = null;
+  @Input() tiposOcultos: string[] = [];
+  @Input() favoritos: string[] = [];
 
   tipos = TIPOS_DOLAR;
+
+  get tiposVisibles(): TipoOption[] {
+    return this.tipos.filter(t => !this.tiposOcultos.includes(t.key));
+  }
+
+  get tiposOrdenados(): TipoOption[] {
+    const visibles = this.tiposVisibles;
+    const favs = visibles.filter(t => this.favoritos.includes(t.key));
+    const rest = visibles.filter(t => !this.favoritos.includes(t.key));
+    return [...favs, ...rest];
+  }
   mostrarCalculadoraDolarAPesos = true;
   copied = false;
   montoInput = 0;
@@ -51,8 +65,19 @@ export class CalculatorComponent {
   faCopy = faCopy;
   faCheck = faCheck;
   faChevronDown = faChevronDown;
+  faStarSolid = faStarSolid;
 
   constructor(private elRef: ElementRef) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tiposOcultos'] && this.tiposOcultos.includes(this.tipoDolarSeleccionado)) {
+      const first = this.tiposVisibles[0];
+      if (first) {
+        this.tipoDolarSeleccionado = first.key;
+        this.tipoDolarSeleccionadoChange.emit(first.key);
+      }
+    }
+  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {

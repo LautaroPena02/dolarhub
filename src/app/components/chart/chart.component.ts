@@ -48,6 +48,9 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   get entriesFiltradas(): HistorialEntry[] {
     const rango = RANGOS.find(r => r.key === this.rangoSeleccionado);
     if (!rango) return this.entries;
+    if (this.rangoSeleccionado === '24h') {
+      return this.entries.length >= 2 ? this.entries.slice(-2) : this.entries;
+    }
     const desde = new Date(Date.now() - rango.horas * 60 * 60 * 1000);
     const filtradas = this.entries.filter(e => new Date(e.fecha) >= desde);
     return filtradas.length > 0 ? filtradas : this.entries.slice(-1);
@@ -211,7 +214,7 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   private formatearLabel(fecha: string): string {
     const d = new Date(fecha);
     if (this.rangoSeleccionado === '24h') {
-      return `${d.getUTCHours()}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
+      return `${d.getDate()}/${d.getMonth() + 1}`;
     }
     if (this.rangoSeleccionado === '1a') {
       return `${d.getMonth() + 1}/${d.getFullYear().toString().slice(2)}`;

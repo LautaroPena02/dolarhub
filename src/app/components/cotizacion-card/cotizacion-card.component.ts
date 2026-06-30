@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarSolid, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
@@ -19,13 +19,17 @@ export class CotizacionCardComponent {
   @Input() variacion: number | null = null;
   @Input() isSelected = false;
   @Input() isFavorite = false;
+  @Input() isHidden = false;
   @Input() isLoading = false;
 
   @Output() select = new EventEmitter<string>();
   @Output() toggleFavorite = new EventEmitter<string>();
+  @Output() toggleHidden = new EventEmitter<string>();
 
   faStarSolid = faStarSolid;
   faStarRegular = faStarRegular;
+  faEye = faEye;
+  faEyeSlash = faEyeSlash;
 
   onSelect(): void {
     if (!this.isLoading) {
@@ -36,5 +40,10 @@ export class CotizacionCardComponent {
   onToggleFavorite(event: Event): void {
     event.stopPropagation();
     this.toggleFavorite.emit(this.tipo);
+  }
+
+  onToggleHidden(event: Event): void {
+    event.stopPropagation();
+    this.toggleHidden.emit(this.tipo);
   }
 }

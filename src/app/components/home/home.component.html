@@ -27,6 +27,8 @@
     <app-calculator
       [tipoDolarSeleccionado]="tipoDolarSeleccionado"
       (tipoDolarSeleccionadoChange)="seleccionarTipoDolar($event)"
+      [tiposOcultos]="ocultos"
+      [favoritos]="favoritos"
       [dolarOficial]="getDolarSeleccionado('oficial')"
       [dolarBlue]="getDolarSeleccionado('blue')"
       [dolarBolsa]="getDolarSeleccionado('bolsa')"
@@ -60,10 +62,17 @@
         [variacion]="item.variacion"
         [isSelected]="tipoDolarSeleccionado === item.tipo"
         [isFavorite]="favoritos.includes(item.tipo)"
+        [isHidden]="ocultos.includes(item.tipo)"
         [isLoading]="isLoading"
         (select)="seleccionarTipoDolar($event)"
-        (toggleFavorite)="toggleFavorito($event)">
+        (toggleFavorite)="toggleFavorito($event)"
+        (toggleHidden)="toggleOculto($event)">
       </app-cotizacion-card>
+      <button *ngIf="cantOcultos > 0"
+              (click)="mostrarTodos()"
+              class="mt-1 px-3 py-1.5 text-xs border border-dashed border-[var(--border)] rounded text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-colors bg-transparent cursor-pointer w-full text-center">
+        Mostrar todos ({{ cantOcultos }} oculto{{ cantOcultos !== 1 ? 's' : '' }})
+      </button>
     </div>
   </div>
 </div>

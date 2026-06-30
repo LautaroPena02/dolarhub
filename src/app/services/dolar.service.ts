@@ -22,7 +22,6 @@ export class DolarService {
     blue: 'blue',
     bolsa: 'bolsa',
     ccl: 'contadoconliqui',
-    tarjeta: 'solidario',
     mayorista: 'mayorista',
     cripto: 'cripto',
   };

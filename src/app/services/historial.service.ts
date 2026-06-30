@@ -36,10 +36,17 @@ export class HistorialService {
     });
 
     Object.keys(cache).forEach(tipo => {
-      if (!procesado[tipo]) {
+      if (!procesado[tipo] && tipo !== 'tarjeta') {
         procesado[tipo] = cache[tipo];
       }
     });
+
+    if (procesado['oficial']?.length) {
+      procesado['tarjeta'] = this.calcularTarjeta(procesado['oficial']);
+      huboNuevosDatos = true;
+    } else if (cache['tarjeta']?.length) {
+      procesado['tarjeta'] = cache['tarjeta'];
+    }
 
     if (huboNuevosDatos) {
       try {
@@ -48,6 +55,26 @@ export class HistorialService {
     }
 
     return Object.keys(procesado).length > 0 ? procesado : cache;
+  }
+
+  private getMultiplicadorTarjeta(fecha: string): number {
+    const ts = new Date(fecha).getTime();
+
+    if (ts >= new Date('2024-12-23').getTime()) return 1.30;
+    if (ts >= new Date('2023-12-13').getTime()) return 1.60;
+    if (ts >= new Date('2023-11-23').getTime()) return 2.55;
+    if (ts >= new Date('2023-10-10').getTime()) return 2.00;
+    if (ts >= new Date('2020-09-14').getTime()) return 1.65;
+    if (ts >= new Date('2019-12-23').getTime()) return 1.30;
+    return 1.00;
+  }
+
+  private calcularTarjeta(oficial: HistorialEntry[]): HistorialEntry[] {
+    return oficial.map(e => ({
+      fecha: e.fecha,
+      compra: +(e.compra * this.getMultiplicadorTarjeta(e.fecha)).toFixed(2),
+      venta: +(e.venta * this.getMultiplicadorTarjeta(e.fecha)).toFixed(2),
+    }));
   }
 
   cargar(): Record<string, HistorialEntry[]> {

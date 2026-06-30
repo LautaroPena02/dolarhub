@@ -3,12 +3,38 @@
     <h3 class="text-sm font-semibold text-[var(--text)]">
       Historial de <span class="text-[var(--primary)]">{{ tipoNombre }}</span>
     </h3>
-    <span class="text-[10px] text-[var(--text-muted)]">
-      Últimos {{ entries.length }} días
-    </span>
+    <div class="flex gap-1" *ngIf="entries.length > 0">
+      <button *ngFor="let r of rangos"
+              (click)="seleccionarRango(r.key)"
+              class="px-2 py-1 text-[10px] font-semibold rounded transition-colors cursor-pointer"
+              [class.bg-[var(--primary)]]="rangoSeleccionado === r.key"
+              [class.text-white]="rangoSeleccionado === r.key"
+              [class.bg-transparent]="rangoSeleccionado !== r.key"
+              [class.text-[var(--text-muted)]]="rangoSeleccionado !== r.key"
+              [class.hover:text-[var(--primary)]]="rangoSeleccionado !== r.key">
+        {{ r.label }}
+      </button>
+    </div>
   </div>
 
-  <div class="relative h-[220px] sm:h-[260px]">
-    <canvas #chartCanvas></canvas>
-  </div>
+  <ng-container *ngIf="entries.length > 0; else emptyState">
+    <div class="relative h-[220px] sm:h-[260px]">
+      <canvas #chartCanvas></canvas>
+    </div>
+    <div class="mt-2 text-center text-[10px] text-[var(--text-muted)]">
+      {{ cantidadPuntos }} punto{{ cantidadPuntos !== 1 ? 's' : '' }} de datos
+    </div>
+  </ng-container>
+
+  <ng-template #emptyState>
+    <div class="flex flex-col items-center justify-center h-[220px] sm:h-[260px] text-center gap-3">
+      <div class="text-3xl opacity-30">&#128200;</div>
+      <p class="text-sm text-[var(--text-muted)] max-w-[240px]">
+        Los datos del gráfico se acumulan con cada visita a la app.
+      </p>
+      <p class="text-[10px] text-[var(--text-muted)] opacity-60">
+        Volvé más veces para ver la evolución del tipo de cambio.
+      </p>
+    </div>
+  </ng-template>
 </div>

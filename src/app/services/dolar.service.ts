@@ -1,13 +1,31 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
-import { DolarData } from '../interfaces/dolar-data.interface'; 
+import { Observable, catchError, throwError, forkJoin, map } from 'rxjs';
+import { DolarData } from '../interfaces/dolar-data.interface';
+
+export interface ArgentinaDatosEntry {
+  casa: string;
+  compra: number;
+  venta: number;
+  fecha: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class DolarService {
-  private baseUrl = 'https://dolarapi.com/v1/dolares'; 
+  private baseUrl = 'https://dolarapi.com/v1/dolares';
+  private argentinaDatosUrl = 'https://api.argentinadatos.com/v1/cotizaciones/dolares';
+
+  private casaMap: Record<string, string> = {
+    oficial: 'oficial',
+    blue: 'blue',
+    bolsa: 'bolsa',
+    ccl: 'contadoconliqui',
+    tarjeta: 'solidario',
+    mayorista: 'mayorista',
+    cripto: 'cripto',
+  };
 
   constructor(private http: HttpClient) {}
 
@@ -26,10 +44,11 @@ export class DolarService {
         errorMessage = `Código de error: ${error.status}, Mensaje: ${error.message}`;
       }
     }
-  
+
     console.error(errorMessage);
     return throwError(errorMessage);
   }
+
   getDolarOficial(): Observable<DolarData> {
     return this.http.get<DolarData>(`${this.baseUrl}/oficial`).pipe(
       catchError(this.handleError)
@@ -69,6 +88,26 @@ export class DolarService {
   getDolarCripto(): Observable<DolarData> {
     return this.http.get<DolarData>(`${this.baseUrl}/cripto`).pipe(
       catchError(this.handleError)
+    );
+  }
+
+  getHistoricoArgentinaDatos(): Observable<Record<string, ArgentinaDatosEntry[]>> {
+    const tipos = Object.keys(this.casaMap);
+    const requests = tipos.map(tipo => {
+      const casa = this.casaMap[tipo];
+      return this.http.get<ArgentinaDatosEntry[]>(`${this.argentinaDatosUrl}/${casa}`).pipe(
+        catchError(() => [])
+      );
+    });
+
+    return forkJoin(requests).pipe(
+      map(results => {
+        const historial: Record<string, ArgentinaDatosEntry[]> = {};
+        tipos.forEach((tipo, i) => {
+          historial[tipo] = results[i];
+        });
+        return historial;
+      })
     );
   }
 }

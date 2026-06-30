@@ -26,6 +26,7 @@
   <div class="order-1 lg:order-2 flex flex-col gap-4 sm:gap-6">
     <app-calculator
       [tipoDolarSeleccionado]="tipoDolarSeleccionado"
+      (tipoDolarSeleccionadoChange)="seleccionarTipoDolar($event)"
       [dolarOficial]="getDolarSeleccionado('oficial')"
       [dolarBlue]="getDolarSeleccionado('blue')"
       [dolarBolsa]="getDolarSeleccionado('bolsa')"
@@ -36,7 +37,7 @@
     </app-calculator>
 
     <app-chart
-      *ngIf="!isLoading && historialEntries.length > 1"
+      *ngIf="!isLoading && tieneHistorial"
       [entries]="historialEntries"
       [tipoNombre]="nombreSeleccionado">
     </app-chart>
@@ -54,7 +55,6 @@
         [nombre]="item.nombre"
         [compra]="item.data?.compra ?? null"
         [venta]="item.data?.venta ?? null"
-        [variacion]="item.variacion"
         [isSelected]="tipoDolarSeleccionado === item.tipo"
         [isFavorite]="favoritos.includes(item.tipo)"
         [isLoading]="isLoading"

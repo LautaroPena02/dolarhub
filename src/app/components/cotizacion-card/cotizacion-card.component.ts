@@ -21,7 +21,6 @@ export class CotizacionCardComponent {
   @Input() nombre = '';
   @Input() compra: number | null = null;
   @Input() venta: number | null = null;
-  @Input() variacion: VariacionData | null = null;
   @Input() isSelected = false;
   @Input() isFavorite = false;
   @Input() isLoading = false;

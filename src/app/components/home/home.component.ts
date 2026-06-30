@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, mergeMap } from 'rxjs';
 import { DolarService } from '../../services/dolar.service';
 import { HistorialService, HistorialEntry } from '../../services/historial.service';
 import { DolarData } from '../../interfaces/dolar-data.interface';
 import { CalculatorComponent } from '../calculator/calculator.component';
-import { CotizacionCardComponent, VariacionData } from '../cotizacion-card/cotizacion-card.component';
+import { CotizacionCardComponent } from '../cotizacion-card/cotizacion-card.component';
 import { ChartComponent } from '../chart/chart.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faRefresh, faExclamationTriangle, faStar, faClock } from '@fortawesome/free-solid-svg-icons';
@@ -15,11 +15,9 @@ interface CotizacionEntry {
   tipo: string;
   nombre: string;
   data: DolarData | null;
-  variacion: VariacionData | null;
 }
 
 const STORAGE_FAVS = 'dolarhub-favoritos';
-const STORAGE_PREV = 'dolarhub-anteriores';
 
 @Component({
   selector: 'app-home',
@@ -33,13 +31,13 @@ const STORAGE_PREV = 'dolarhub-anteriores';
 })
 export class HomeComponent implements OnInit {
   cotizaciones: CotizacionEntry[] = [
-    { tipo: 'oficial', nombre: 'Dólar Oficial', data: null, variacion: null },
-    { tipo: 'blue', nombre: 'Dólar Blue', data: null, variacion: null },
-    { tipo: 'bolsa', nombre: 'Dólar Bolsa', data: null, variacion: null },
-    { tipo: 'ccl', nombre: 'Dólar CCL', data: null, variacion: null },
-    { tipo: 'tarjeta', nombre: 'Dólar Tarjeta', data: null, variacion: null },
-    { tipo: 'mayorista', nombre: 'Dólar Mayorista', data: null, variacion: null },
-    { tipo: 'cripto', nombre: 'Dólar Cripto', data: null, variacion: null },
+    { tipo: 'oficial', nombre: 'Dólar Oficial', data: null },
+    { tipo: 'blue', nombre: 'Dólar Blue', data: null },
+    { tipo: 'bolsa', nombre: 'Dólar Bolsa', data: null },
+    { tipo: 'ccl', nombre: 'Dólar CCL', data: null },
+    { tipo: 'tarjeta', nombre: 'Dólar Tarjeta', data: null },
+    { tipo: 'mayorista', nombre: 'Dólar Mayorista', data: null },
+    { tipo: 'cripto', nombre: 'Dólar Cripto', data: null },
   ];
 
   tipoDolarSeleccionado = 'oficial';
@@ -63,7 +61,6 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.historialService.sembrarDatosDemo();
     this.cargarFavoritos();
     this.historialMap = this.historialService.cargar();
     this.actualizarHistorialSeleccionado();
@@ -82,6 +79,10 @@ export class HomeComponent implements OnInit {
 
   get nombreSeleccionado(): string {
     return this.cotizaciones.find(c => c.tipo === this.tipoDolarSeleccionado)?.nombre || this.tipoDolarSeleccionado;
+  }
+
+  get tieneHistorial(): boolean {
+    return this.historialEntries.length > 0;
   }
 
   private actualizarHistorialSeleccionado(): void {
@@ -137,20 +138,21 @@ export class HomeComponent implements OnInit {
       this.dolarService.getDolarCripto(),
     ];
 
-    forkJoin(requests).subscribe({
-      next: ([oficial, blue, bolsa, ccl, tarjeta, mayorista, cripto]) => {
+    forkJoin(requests).pipe(
+      mergeMap(([oficial, blue, bolsa, ccl, tarjeta, mayorista, cripto]) => {
         const results: (DolarData | null)[] = [oficial, blue, bolsa, ccl, tarjeta, mayorista, cripto];
-        const prevData = this.cargarAnteriores();
 
         this.cotizaciones.forEach((entry, i) => {
           entry.data = results[i];
-          entry.variacion = this.calcularVariacion(entry.tipo, results[i], prevData);
         });
 
         this.actualizarUltimaActualizacion();
-        this.guardarAnteriores();
-        this.historialService.guardar(this.cotizaciones);
-        this.historialMap = this.historialService.cargar();
+
+        return this.dolarService.getHistoricoArgentinaDatos();
+      })
+    ).subscribe({
+      next: (argentinaDatosData) => {
+        this.historialMap = this.historialService.procesarArgentinaDatos(argentinaDatosData);
         this.actualizarHistorialSeleccionado();
         this.isLoading = false;
         this.hasError = false;
@@ -171,46 +173,5 @@ export class HomeComponent implements OnInit {
       fechas.sort();
       this.ultimaActualizacion = fechas[fechas.length - 1];
     }
-  }
-
-  private calcularVariacion(
-    tipo: string,
-    actual: DolarData | null,
-    prevMap: Record<string, { compra: number; venta: number }>
-  ): VariacionData | null {
-    if (!actual) return null;
-    const prev = prevMap[tipo];
-    if (!prev) return null;
-    const prevProm = (prev.compra + prev.venta) / 2;
-    const currProm = (actual.compra + actual.venta) / 2;
-    if (prevProm === 0) return null;
-    const diff = ((currProm - prevProm) / prevProm) * 100;
-    const absDiff = Math.abs(diff);
-    if (absDiff < 0.01) {
-      return { tipo: 'estable', porcentaje: 0 };
-    }
-    return {
-      tipo: diff > 0 ? 'subio' : 'bajo',
-      porcentaje: Math.round(absDiff * 100) / 100
-    };
-  }
-
-  private cargarAnteriores(): Record<string, { compra: number; venta: number }> {
-    try {
-      const raw = localStorage.getItem(STORAGE_PREV);
-      return raw ? JSON.parse(raw) : {};
-    } catch { return {}; }
-  }
-
-  private guardarAnteriores(): void {
-    const data: Record<string, { compra: number; venta: number }> = {};
-    this.cotizaciones.forEach(c => {
-      if (c.data) {
-        data[c.tipo] = { compra: c.data.compra, venta: c.data.venta };
-      }
-    });
-    try {
-      localStorage.setItem(STORAGE_PREV, JSON.stringify(data));
-    } catch {}
   }
 }

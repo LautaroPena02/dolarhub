@@ -1,4 +1,4 @@
-import { Component, Input, HostListener, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DolarData } from '../../interfaces/dolar-data.interface';
@@ -33,6 +33,7 @@ const TIPOS_DOLAR: TipoOption[] = [
 })
 export class CalculatorComponent {
   @Input() tipoDolarSeleccionado = 'oficial';
+  @Output() tipoDolarSeleccionadoChange = new EventEmitter<string>();
   @Input() dolarOficial: DolarData | null = null;
   @Input() dolarBlue: DolarData | null = null;
   @Input() dolarBolsa: DolarData | null = null;
@@ -66,6 +67,7 @@ export class CalculatorComponent {
 
   seleccionarTipo(key: string): void {
     this.tipoDolarSeleccionado = key;
+    this.tipoDolarSeleccionadoChange.emit(key);
     this.dropdownOpen = false;
   }
 

@@ -1,12 +1,27 @@
 import {
   Component, Input, OnChanges, SimpleChanges,
-  ElementRef, ViewChild, AfterViewInit, OnDestroy, NgZone
+  ElementRef, ViewChild, AfterViewInit, OnDestroy, NgZone, Inject, PLATFORM_ID
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { HistorialEntry } from '../../services/historial.service';
 
 Chart.register(...registerables);
+
+type RangoTemporal = '24h' | '7d' | '30d' | '1a';
+
+interface RangoOption {
+  key: RangoTemporal;
+  label: string;
+  horas: number;
+}
+
+const RANGOS: RangoOption[] = [
+  { key: '24h', label: '24 Horas', horas: 24 },
+  { key: '7d', label: '7 Días', horas: 7 * 24 },
+  { key: '30d', label: '30 Días', horas: 30 * 24 },
+  { key: '1a', label: '1 Año', horas: 365 * 24 },
+];
 
 @Component({
   selector: 'app-chart',
@@ -19,18 +34,35 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() tipoNombre = '';
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
 
+  rangos = RANGOS;
+  rangoSeleccionado: RangoTemporal = '30d';
   private chart: Chart | null = null;
+  private isBrowser: boolean;
 
-  constructor(private zone: NgZone) {}
+  constructor(private zone: NgZone, @Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  get entriesFiltradas(): HistorialEntry[] {
+    const rango = RANGOS.find(r => r.key === this.rangoSeleccionado);
+    if (!rango) return this.entries;
+    const desde = new Date(Date.now() - rango.horas * 60 * 60 * 1000);
+    const filtradas = this.entries.filter(e => new Date(e.fecha) >= desde);
+    return filtradas.length > 0 ? filtradas : this.entries.slice(-1);
+  }
+
+  get cantidadPuntos(): number {
+    return this.entriesFiltradas.length;
+  }
 
   ngAfterViewInit(): void {
-    if (this.entries.length > 0) {
+    if (this.isBrowser && this.entries.length > 0) {
       this.createChart();
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['entries'] && this.chartCanvas) {
+    if (this.isBrowser && changes['entries'] && this.chartCanvas) {
       this.updateChart();
     }
   }
@@ -39,16 +71,22 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.chart?.destroy();
   }
 
+  seleccionarRango(key: RangoTemporal): void {
+    this.rangoSeleccionado = key;
+    if (this.isBrowser) {
+      this.updateChart();
+    }
+  }
+
   private createChart(): void {
+    if (!this.isBrowser) return;
     if (this.chart) this.chart.destroy();
 
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    const labels = this.entries.map(e => {
-      const d = new Date(e.fecha);
-      return `${d.getDate()}/${d.getMonth() + 1}`;
-    });
+    const entries = this.entriesFiltradas;
+    const labels = entries.map(e => this.formatearLabel(e.fecha));
 
     const gradientCompra = ctx.createLinearGradient(0, 0, 0, 220);
     gradientCompra.addColorStop(0, 'rgba(30, 173, 17, 0.25)');
@@ -65,23 +103,23 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
         datasets: [
           {
             label: 'Compra',
-            data: this.entries.map(e => e.compra),
+            data: entries.map(e => e.compra),
             borderColor: '#1ead11',
             backgroundColor: gradientCompra,
             fill: true,
             tension: 0.35,
-            pointRadius: 2,
+            pointRadius: this.rangoSeleccionado === '1a' ? 0 : 2,
             pointHoverRadius: 5,
             borderWidth: 2,
           },
           {
             label: 'Venta',
-            data: this.entries.map(e => e.venta),
+            data: entries.map(e => e.venta),
             borderColor: '#3b82f6',
             backgroundColor: gradientVenta,
             fill: true,
             tension: 0.35,
-            pointRadius: 2,
+            pointRadius: this.rangoSeleccionado === '1a' ? 0 : 2,
             pointHoverRadius: 5,
             borderWidth: 2,
           },
@@ -116,7 +154,7 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
         },
         scales: {
           x: {
-            ticks: { color: '#6b7280', font: { size: 10 }, maxRotation: 45 },
+            ticks: { color: '#6b7280', font: { size: 10 }, maxRotation: 45, maxTicksLimit: 12 },
             grid: { color: 'rgba(31, 41, 55, 0.4)' },
           },
           y: {
@@ -142,14 +180,25 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
       return;
     }
 
-    const labels = this.entries.map(e => {
-      const d = new Date(e.fecha);
-      return `${d.getDate()}/${d.getMonth() + 1}`;
-    });
+    const entries = this.entriesFiltradas;
+    const labels = entries.map(e => this.formatearLabel(e.fecha));
 
     this.chart.data.labels = labels;
-    this.chart.data.datasets[0].data = this.entries.map(e => e.compra);
-    this.chart.data.datasets[1].data = this.entries.map(e => e.venta);
+    (this.chart.data.datasets[0] as any).data = entries.map(e => e.compra);
+    (this.chart.data.datasets[1] as any).data = entries.map(e => e.venta);
+    (this.chart.data.datasets[0] as any).pointRadius = this.rangoSeleccionado === '1a' ? 0 : 2;
+    (this.chart.data.datasets[1] as any).pointRadius = this.rangoSeleccionado === '1a' ? 0 : 2;
     this.chart.update('none');
+  }
+
+  private formatearLabel(fecha: string): string {
+    const d = new Date(fecha);
+    if (this.rangoSeleccionado === '24h') {
+      return `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+    }
+    if (this.rangoSeleccionado === '1a') {
+      return `${d.getMonth() + 1}/${d.getFullYear().toString().slice(2)}`;
+    }
+    return `${d.getDate()}/${d.getMonth() + 1}`;
   }
 }

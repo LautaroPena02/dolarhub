@@ -16,31 +16,16 @@
 
   <div class="flex items-center justify-between gap-2">
     <span class="text-sm sm:text-base font-semibold text-[var(--text)]">{{ nombre }}</span>
-    <div class="flex items-center gap-2">
-      <span *ngIf="variacion"
-            class="inline-flex items-center gap-0.5 text-[11px] font-semibold px-1.5 py-0.5 rounded"
-            [class.text-[var(--success)]]="variacion.tipo === 'subio'"
-            [class.bg-[var(--success-light)]]="variacion.tipo === 'subio'"
-            [class.text-[var(--danger)]]="variacion.tipo === 'bajo'"
-            [class.bg-[var(--danger-light)]]="variacion.tipo === 'bajo'"
-            [class.text-[var(--text-muted)]]="variacion.tipo === 'estable'"
-            [class.bg-[var(--bg-input)]]="variacion.tipo === 'estable'">
-        <span *ngIf="variacion.tipo === 'subio'">&#9650;</span>
-        <span *ngIf="variacion.tipo === 'bajo'">&#9660;</span>
-        <span *ngIf="variacion.tipo === 'estable'">&#9679;</span>
-        {{ variacion.porcentaje }}%
-      </span>
-      <button class="bg-transparent border-none cursor-pointer p-0.5 flex items-center transition-all duration-150"
-              [class.text-[var(--warning)]]="isFavorite"
-              [class.text-[var(--text-muted)]]="!isFavorite"
-              [class.hover:text-[var(--warning)]]="!isFavorite"
-              [class.hover:scale-110]="!isFavorite"
-              (click)="onToggleFavorite($event)"
-              [attr.aria-label]="isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
-              tabindex="-1">
-        <fa-icon [icon]="isFavorite ? faStarSolid : faStarRegular" class="text-sm"></fa-icon>
-      </button>
-    </div>
+    <button class="bg-transparent border-none cursor-pointer p-0.5 flex items-center transition-all duration-150"
+            [class.text-[var(--warning)]]="isFavorite"
+            [class.text-[var(--text-muted)]]="!isFavorite"
+            [class.hover:text-[var(--warning)]]="!isFavorite"
+            [class.hover:scale-110]="!isFavorite"
+            (click)="onToggleFavorite($event)"
+            [attr.aria-label]="isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+            tabindex="-1">
+      <fa-icon [icon]="isFavorite ? faStarSolid : faStarRegular" class="text-sm"></fa-icon>
+    </button>
   </div>
 
   <div *ngIf="!isLoading; else skeletonPrices" class="flex items-center justify-between gap-3">

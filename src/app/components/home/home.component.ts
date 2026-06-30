@@ -74,9 +74,10 @@ export class HomeComponent implements OnInit {
 
   get cotizacionesOrdenadas(): CotizacionEntry[] {
     const visibles = this.cotizaciones.filter(c => !this.ocultos.includes(c.tipo));
-    const favs = visibles.filter(c => this.favoritos.includes(c.tipo));
-    const rest = visibles.filter(c => !this.favoritos.includes(c.tipo));
-    return [...favs, ...rest];
+    const blue = visibles.filter(c => c.tipo === 'blue');
+    const favs = visibles.filter(c => c.tipo !== 'blue' && this.favoritos.includes(c.tipo));
+    const rest = visibles.filter(c => c.tipo !== 'blue' && !this.favoritos.includes(c.tipo));
+    return [...blue, ...favs, ...rest];
   }
 
   get cantOcultos(): number {

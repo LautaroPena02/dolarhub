@@ -53,9 +53,10 @@ export class CalculatorComponent implements OnChanges {
 
   get tiposOrdenados(): TipoOption[] {
     const visibles = this.tiposVisibles;
-    const favs = visibles.filter(t => this.favoritos.includes(t.key));
-    const rest = visibles.filter(t => !this.favoritos.includes(t.key));
-    return [...favs, ...rest];
+    const blue = visibles.filter(t => t.key === 'blue');
+    const favs = visibles.filter(t => t.key !== 'blue' && this.favoritos.includes(t.key));
+    const rest = visibles.filter(t => t.key !== 'blue' && !this.favoritos.includes(t.key));
+    return [...blue, ...favs, ...rest];
   }
   mostrarCalculadoraDolarAPesos = true;
   copied = false;

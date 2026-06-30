@@ -1,68 +1,84 @@
-<div *ngIf="getDolarSeleccionado() as dolar" class="converter">
-  <div class="d-flex mb-3">
-    <button class="btn btn-primary mr-2" [ngClass]="{'active': mostrarCalculadoraDolarAPesos}" (click)="mostrarCalculadoraDolarAPesos = true">
-      <i class="bi bi-arrow-down-circle me-1"></i> Dólares a Pesos
+<div *ngIf="getDolarSeleccionado() as dolar"
+     class="bg-[var(--bg-card)] border border-[var(--border)] rounded-lg overflow-hidden fade-in">
+
+  <div class="flex border-b border-[var(--border)]">
+    <button class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold transition-all duration-150"
+            [class.text-[var(--primary)]]="mostrarCalculadoraDolarAPesos"
+            [class.bg-[var(--primary-light)]]="mostrarCalculadoraDolarAPesos"
+            [class.border-b-2]="mostrarCalculadoraDolarAPesos"
+            [class.border-[var(--primary)]]="mostrarCalculadoraDolarAPesos"
+            [class.text-[var(--text-muted)]]="!mostrarCalculadoraDolarAPesos"
+            [class.hover:text-[var(--text)]]="!mostrarCalculadoraDolarAPesos"
+            [class.hover:bg-[var(--bg-hover)]]="!mostrarCalculadoraDolarAPesos"
+            (click)="mostrarCalculadoraDolarAPesos = true; montoInput = 0">
+      USD &rarr; ARS
     </button>
-    <button class="btn btn-primary" [ngClass]="{'active': !mostrarCalculadoraDolarAPesos}" (click)="mostrarCalculadoraDolarAPesos = false">
-      <i class="bi bi-arrow-up-circle me-1"></i> Pesos a Dólares
+    <button class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold transition-all duration-150"
+            [class.text-[var(--primary)]]="!mostrarCalculadoraDolarAPesos"
+            [class.bg-[var(--primary-light)]]="!mostrarCalculadoraDolarAPesos"
+            [class.border-b-2]="!mostrarCalculadoraDolarAPesos"
+            [class.border-[var(--primary)]]="!mostrarCalculadoraDolarAPesos"
+            [class.text-[var(--text-muted)]]="mostrarCalculadoraDolarAPesos"
+            [class.hover:text-[var(--text)]]="mostrarCalculadoraDolarAPesos"
+            [class.hover:bg-[var(--bg-hover)]]="mostrarCalculadoraDolarAPesos"
+            (click)="mostrarCalculadoraDolarAPesos = false; montoInput = 0">
+      ARS &rarr; USD
     </button>
   </div>
-  <div *ngIf="mostrarCalculadoraDolarAPesos" class="calculadora-container">
-    <div class="calculadora-header">
-      <i class="bi bi-arrow-down"></i> DÓLARES A PESOS
+
+  <div class="p-4 sm:p-5 flex flex-col gap-4">
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Tipo de dólar</label>
+      <select class="w-full bg-[var(--bg-input)] text-[var(--text)] border border-[var(--border)] rounded px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors focus:border-[var(--primary)] focus:outline-none appearance-auto"
+              [(ngModel)]="tipoDolarSeleccionado">
+        <option *ngFor="let t of tipos" [value]="t.key">Dólar {{ t.label }}</option>
+      </select>
     </div>
-    <div class="mb-2">
-      <label class="form-label small mb-1">Cantidad en dólares:</label>
-      <div class="input-group input-group-sm">
-        <span class="input-group-text">USD</span>
-        <input type="number" class="form-control"
-               [(ngModel)]="montosDolar[tipoDolarSeleccionado]"
-               (input)="convertir(tipoDolarSeleccionado)">
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Monto en {{ monedaOrigen }}</label>
+      <div class="flex border rounded overflow-hidden transition-colors"
+           [class.border-[var(--danger)]]="montoInput < 0"
+           [class.border-[var(--border)]]="montoInput >= 0"
+           [class.focus-within:border-[var(--primary)]]="montoInput >= 0">
+        <span class="flex items-center px-3 bg-[var(--bg-input)] text-[var(--text-muted)] text-xs font-semibold border-r border-[var(--border)] min-w-[48px] justify-center">
+          {{ monedaOrigen }}
+        </span>
+        <input type="number"
+               class="flex-1 px-3 py-2.5 text-sm sm:text-base font-medium bg-[var(--bg-input)] text-[var(--text)] border-none outline-none tabular-nums w-0 min-w-0"
+               [(ngModel)]="montoInput"
+               (input)="onInputChange()"
+               min="0" step="any" placeholder="0.00" />
       </div>
+      <span class="text-xs text-[var(--danger)] font-medium" *ngIf="montoInput < 0">El valor no puede ser negativo</span>
     </div>
-    <div class="mb-0">
-      <label class="form-label small mb-1">Resultado en pesos:</label>
-      <div class="input-group input-group-sm">
-        <span class="input-group-text">ARS</span>
-        <input type="text" class="form-control"
-               [value]="montosDolar[tipoDolarSeleccionado] * dolar.venta | currency:'ARS'"
-               readonly>
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Resultado en {{ monedaDestino }}</label>
+      <div class="flex border rounded overflow-hidden transition-all duration-150"
+           [class.border-[var(--primary)]]="montoInput > 0 && montoValido"
+           [class.bg-[var(--primary-light)]]="montoInput > 0 && montoValido"
+           [class.border-[var(--border)]]="!(montoInput > 0 && montoValido)">
+        <span class="flex items-center px-3 bg-[var(--bg-input)] text-[var(--text-muted)] text-xs font-semibold border-r border-[var(--border)] min-w-[48px] justify-center">
+          {{ monedaDestino }}
+        </span>
+        <span class="flex-1 px-3 py-2.5 text-base sm:text-lg font-bold text-[var(--text)] tabular-nums">{{ resultadoFormateado }}</span>
+        <button class="flex items-center px-3 border-l border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--bg-hover)] transition-all duration-150 bg-transparent cursor-pointer"
+                (click)="copiarResultado()"
+                [attr.aria-label]="'Copiar resultado'">
+          <fa-icon [icon]="copied ? faCheck : faCopy" [class.text-[var(--success)]]="copied" class="text-sm"></fa-icon>
+        </button>
       </div>
     </div>
   </div>
-  <div *ngIf="!mostrarCalculadoraDolarAPesos" class="calculadora-container">
-    <div class="calculadora-header">
-      <i class="bi bi-arrow-up"></i> PESOS A DÓLARES
-    </div>
-    <div class="mb-2">
-      <label class="form-label small mb-1">Cantidad en pesos:</label>
-      <div class="input-group input-group-sm">
-        <span class="input-group-text">ARS</span>
-        <input type="number" class="form-control"
-               [(ngModel)]="montosPesos[tipoDolarSeleccionado]"
-               (input)="convertirInverso(tipoDolarSeleccionado)">
-      </div>
-    </div>
-    <div class="mb-0">
-      <label class="form-label small mb-1">Resultado en dólares:</label>
-      <div class="input-group input-group-sm">
-        <span class="input-group-text">USD</span>
-        <input type="text" class="form-control"
-               [value]="montosPesos[tipoDolarSeleccionado] / dolar.compra | currency:'USD'"
-               readonly>
-      </div>
-    </div>
-  </div> 
-  <div class="cotizacion-info">
-    <div class="current-rate">
-      <p class="mb-1 small"><strong>Cotización actual:</strong></p>
-      <div class="d-flex justify-content-between">
-        <div>
-          <span><strong>Compra:</strong> {{ dolar.compra | currency }}</span>
-        </div>
-        <div>
-          <span><strong>Venta:</strong> {{ dolar.venta | currency }}</span>
-        </div>
+
+  <div class="border-t border-[var(--border)] px-4 sm:px-5 py-3">
+    <div class="flex flex-col gap-1.5">
+      <span class="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Cotización {{ getTituloCalculadora() }}</span>
+      <div class="flex items-center gap-2 text-xs sm:text-sm text-[var(--text-secondary)] flex-wrap">
+        <span>Compra: <strong class="text-[var(--text)] font-bold">{{ dolar.compra | currency:'ARS':'symbol-narrow':'1.2-2' }}</strong></span>
+        <span class="text-[var(--border)]">|</span>
+        <span>Venta: <strong class="text-[var(--text)] font-bold">{{ dolar.venta | currency:'ARS':'symbol-narrow':'1.2-2' }}</strong></span>
       </div>
     </div>
   </div>

@@ -1,21 +1,38 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DolarData } from '../../interfaces/dolar-data.interface';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCopy, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 interface MontosMap {
   [key: string]: number;
 }
 
+interface TipoOption {
+  key: string;
+  label: string;
+}
+
+const TIPOS_DOLAR: TipoOption[] = [
+  { key: 'oficial', label: 'Oficial' },
+  { key: 'blue', label: 'Blue' },
+  { key: 'bolsa', label: 'Bolsa' },
+  { key: 'ccl', label: 'CCL' },
+  { key: 'tarjeta', label: 'Tarjeta' },
+  { key: 'mayorista', label: 'Mayorista' },
+  { key: 'cripto', label: 'Cripto' },
+];
+
 @Component({
   selector: 'app-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule], 
+  imports: [CommonModule, FormsModule, FontAwesomeModule],
   templateUrl: './calculator.component.html',
   styleUrls: ['./calculator.component.css'],
 })
-export class CalculatorComponent implements OnInit {
-  @Input() tipoDolarSeleccionado: string = 'oficial';
+export class CalculatorComponent {
+  @Input() tipoDolarSeleccionado = 'oficial';
   @Input() dolarOficial: DolarData | null = null;
   @Input() dolarBlue: DolarData | null = null;
   @Input() dolarBolsa: DolarData | null = null;
@@ -24,74 +41,79 @@ export class CalculatorComponent implements OnInit {
   @Input() dolarMayorista: DolarData | null = null;
   @Input() dolarCripto: DolarData | null = null;
 
-  montosDolar: MontosMap = {
-    oficial: 0,
-    blue: 0,
-    bolsa: 0,
-    ccl: 0,
-    tarjeta: 0,
-    mayorista: 0,
-    cripto: 0
-  };
+  tipos = TIPOS_DOLAR;
+  mostrarCalculadoraDolarAPesos = true;
+  copied = false;
+  montoInput = 0;
 
-  montosPesos: MontosMap = {
-    oficial: 0,
-    blue: 0,
-    bolsa: 0,
-    ccl: 0,
-    tarjeta: 0,
-    mayorista: 0,
-    cripto: 0
-  };
+  faCopy = faCopy;
+  faCheck = faCheck;
 
-  mostrarCalculadoraDolarAPesos: boolean = true;
-  constructor() { }
-  
-  ngOnInit(): void { }
-
-  getTituloCalculadora(): string {
-    const titulos: { [key: string]: string } = {
-      'oficial': 'Dólar Oficial',
-      'blue': 'Dólar Blue',
-      'bolsa': 'Dólar Bolsa',
-      'ccl': 'Dólar CCL',
-      'tarjeta': 'Dólar Tarjeta',
-      'mayorista': 'Dólar Mayorista',
-      'cripto': 'Dólar Cripto'
-    };
-    
-    return titulos[this.tipoDolarSeleccionado] || 'Dólar';
+  get montoValido(): boolean {
+    return this.montoInput >= 0;
   }
 
   getDolarSeleccionado(): DolarData | null {
-    const dolarMap: { [key: string]: DolarData | null } = {
-      'oficial': this.dolarOficial,
-      'blue': this.dolarBlue,
-      'bolsa': this.dolarBolsa,
-      'ccl': this.dolarCCL,
-      'tarjeta': this.dolarTarjeta,
-      'mayorista': this.dolarMayorista,
-      'cripto': this.dolarCripto
+    const map: Record<string, DolarData | null> = {
+      oficial: this.dolarOficial,
+      blue: this.dolarBlue,
+      bolsa: this.dolarBolsa,
+      ccl: this.dolarCCL,
+      tarjeta: this.dolarTarjeta,
+      mayorista: this.dolarMayorista,
+      cripto: this.dolarCripto,
     };
-    
-    return dolarMap[this.tipoDolarSeleccionado];
+    return map[this.tipoDolarSeleccionado] || null;
   }
 
-  convertir(tipo: string): void {
+  get resultado(): number {
     const dolar = this.getDolarSeleccionado();
-    if (dolar && dolar.venta && this.montosDolar[tipo] !== undefined) {
-      this.montosPesos[tipo] = +(this.montosDolar[tipo] * dolar.venta).toFixed(2);
+    if (!dolar || !this.montoValido) return 0;
+    if (this.mostrarCalculadoraDolarAPesos) {
+      return +(this.montoInput * dolar.venta).toFixed(2);
     }
+    return +(this.montoInput / dolar.compra).toFixed(2);
   }
 
-  convertirInverso(tipo: string): void {
+  get resultadoFormateado(): string {
     const dolar = this.getDolarSeleccionado();
-    if (dolar && dolar.compra && this.montosPesos[tipo] !== undefined) {
-      this.montosDolar[tipo] = +(this.montosPesos[tipo] / dolar.compra).toFixed(2);
+    if (!dolar) return '';
+    if (this.mostrarCalculadoraDolarAPesos) {
+      return this.resultado.toLocaleString('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        minimumFractionDigits: 2,
+      });
     }
+    return this.resultado.toLocaleString('es-AR', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+    });
   }
 
-  toggleCalculadora() {
-    this.mostrarCalculadoraDolarAPesos = !this.mostrarCalculadoraDolarAPesos;
+  get monedaOrigen(): string {
+    return this.mostrarCalculadoraDolarAPesos ? 'USD' : 'ARS';
+  }
+
+  get monedaDestino(): string {
+    return this.mostrarCalculadoraDolarAPesos ? 'ARS' : 'USD';
+  }
+
+  copiarResultado(): void {
+    const text = `${this.resultadoFormateado} (${this.getTituloCalculadora()})`;
+    navigator.clipboard.writeText(text).then(() => {
+      this.copied = true;
+      setTimeout(() => this.copied = false, 2000);
+    }).catch(() => {});
+  }
+
+  getTituloCalculadora(): string {
+    const found = TIPOS_DOLAR.find(t => t.key === this.tipoDolarSeleccionado);
+    return found ? `Dólar ${found.label}` : 'Dólar';
+  }
+
+  onInputChange(): void {
+    if (this.montoInput < 0) this.montoInput = 0;
   }
 }

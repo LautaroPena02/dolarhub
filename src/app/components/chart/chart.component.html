@@ -1,0 +1,14 @@
+<div class="p-4 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-[var(--shadow-md)]">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-semibold text-[var(--text)]">
+      Historial de <span class="text-[var(--primary)]">{{ tipoNombre }}</span>
+    </h3>
+    <span class="text-[10px] text-[var(--text-muted)]">
+      Últimos {{ entries.length }} días
+    </span>
+  </div>
+
+  <div class="relative h-[220px] sm:h-[260px]">
+    <canvas #chartCanvas></canvas>
+  </div>
+</div>

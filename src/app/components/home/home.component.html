@@ -23,7 +23,7 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-  <div class="order-1 lg:order-2">
+  <div class="order-1 lg:order-2 flex flex-col gap-4 sm:gap-6">
     <app-calculator
       [tipoDolarSeleccionado]="tipoDolarSeleccionado"
       [dolarOficial]="getDolarSeleccionado('oficial')"
@@ -34,6 +34,12 @@
       [dolarMayorista]="getDolarSeleccionado('mayorista')"
       [dolarCripto]="getDolarSeleccionado('cripto')">
     </app-calculator>
+
+    <app-chart
+      *ngIf="!isLoading && historialEntries.length > 1"
+      [entries]="historialEntries"
+      [tipoNombre]="nombreSeleccionado">
+    </app-chart>
   </div>
 
   <div class="order-2 lg:order-1">

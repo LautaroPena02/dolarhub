@@ -1,9 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DolarData } from '../../interfaces/dolar-data.interface';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCopy, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCopy, faCheck, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 interface MontosMap {
   [key: string]: number;
@@ -45,9 +45,33 @@ export class CalculatorComponent {
   mostrarCalculadoraDolarAPesos = true;
   copied = false;
   montoInput = 0;
+  dropdownOpen = false;
 
   faCopy = faCopy;
   faCheck = faCheck;
+  faChevronDown = faChevronDown;
+
+  constructor(private elRef: ElementRef) {}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    if (!this.elRef.nativeElement.contains(event.target)) {
+      this.dropdownOpen = false;
+    }
+  }
+
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  seleccionarTipo(key: string): void {
+    this.tipoDolarSeleccionado = key;
+    this.dropdownOpen = false;
+  }
+
+  get nombreTipoSeleccionado(): string {
+    return this.tipos.find(t => t.key === this.tipoDolarSeleccionado)?.label || '';
+  }
 
   get montoValido(): boolean {
     return this.montoInput >= 0;

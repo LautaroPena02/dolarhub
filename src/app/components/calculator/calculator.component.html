@@ -27,12 +27,29 @@
   </div>
 
   <div class="p-4 sm:p-5 flex flex-col gap-4">
-    <div class="flex flex-col gap-1.5">
+    <div class="flex flex-col gap-1.5 relative">
       <label class="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Tipo de dólar</label>
-      <select class="w-full bg-[var(--bg-input)] text-[var(--text)] border border-[var(--border)] rounded px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors focus:border-[var(--primary)] focus:outline-none appearance-auto"
-              [(ngModel)]="tipoDolarSeleccionado">
-        <option *ngFor="let t of tipos" [value]="t.key">Dólar {{ t.label }}</option>
-      </select>
+      <button type="button"
+              (click)="toggleDropdown()"
+              class="w-full flex items-center justify-between gap-2 bg-[var(--bg-input)] text-[var(--text)] border border-[var(--border)] rounded px-3 py-2.5 text-sm font-medium cursor-pointer transition-colors hover:border-[var(--primary)] focus:border-[var(--primary)] focus:outline-none">
+        <span>Dólar {{ nombreTipoSeleccionado }}</span>
+        <fa-icon [icon]="faChevronDown" class="text-[10px] text-[var(--text-muted)] transition-transform duration-200"
+                 [class.rotate-180]="dropdownOpen"></fa-icon>
+      </button>
+      <div *ngIf="dropdownOpen"
+           class="absolute top-full left-0 right-0 mt-1 bg-[var(--bg-input)] border border-[var(--border)] rounded-lg shadow-[var(--shadow-lg)] z-50 overflow-hidden max-h-[280px] overflow-y-auto">
+        <button *ngFor="let t of tipos"
+                type="button"
+                (click)="seleccionarTipo(t.key)"
+                class="w-full text-left px-3 py-2 text-xs font-medium cursor-pointer transition-colors"
+                [class.text-[var(--primary)]]="t.key === tipoDolarSeleccionado"
+                [class.bg-[var(--primary-light)]]="t.key === tipoDolarSeleccionado"
+                [class.text-[var(--text)]]="t.key !== tipoDolarSeleccionado"
+                [class.hover:bg-[var(--bg-hover)]]="t.key !== tipoDolarSeleccionado"
+                [class.hover:text-[var(--primary)]]="t.key !== tipoDolarSeleccionado">
+          Dólar {{ t.label }}
+        </button>
+      </div>
     </div>
 
     <div class="flex flex-col gap-1.5">
